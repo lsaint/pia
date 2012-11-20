@@ -10,11 +10,13 @@ class AuthServer(object):
 
 
     def start(self):
-        print "Starting auth server on port 22222"
-        server = StreamServer(('0.0.0.0', 22222), self.accept)
+        print "Starting auth server on port 3333"
+        server = StreamServer(('0.0.0.0', 3333), self.accept)
         server.serve_forever()
 
 
     def accept(self, socket, address):
-        socket.send("""<?xml version="1.0"?><cross-domain-policy><allow-access-from domain="*" to-ports="*"/></cross-domain-policy>\0""")
+        line = socket.recv(1024)
+        socket.sendall("""<?xml version="1.0"?><cross-domain-policy><allow-access-from domain="*" to-ports="*"/></cross-domain-policy>\0""")
+
 

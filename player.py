@@ -13,6 +13,6 @@ class Player(object):
         self.name = name
         self.socket = s
 
-    def send(self, dt):
-        self.socket.send(json.dumps(dt) + DELIMITER)
+    def send(self, msg):
+        self.socket.sendall(json.dumps(msg) + DELIMITER)
 

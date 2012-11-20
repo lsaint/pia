@@ -2,13 +2,13 @@
 
 import time
 
-class Timer(object):
 
-    def __init__(self, func, interval):
-        self.func = func
-        self.interval = interval
+timer_list = []
 
-
-    def update(self):
-        pass
+def setTimer(func, interval):
+    def timer():
+        while True:
+            gevent.sleep(interval)
+            func()
+    timer_list.append(timer)
 

@@ -16,25 +16,22 @@ class PiaServer(object):
 
     def accept(self, socket, address):
         print 'New connection from %s:%s' % address
-        buf = ""
+        fileobj = socket.makefile()
         while True:
             try:
-                buf =  "%s%s" % (buf, socket.recv(1024))
+                line = fileobj.readline()
             except Exception, e:
                 print e
+                self.piaMgr.disconnect(socket)
                 break
-            if not buf:
+            print "2222", line
+            if not line:
+                print ("client disconnected")
+                self.piaMgr.disconnect(socket)
                 break
-            print "buf", buf
-            if DELIMITER not in buf:
-                continue
-            la = buf.rindex(DELIMITER)
-            buf, lines = buf[la+1:], buf[:la]
-            lt = lines.splitlines()
-            for line in lt:
-                jn = json.loads(line)
-                if type(jn) == dict:
-                    self.dispatch(jn, socket)
+            jn = json.loads(line)
+            if type(jn) == dict:
+                self.dispatch(jn, socket)
 
 
     def dispatch(self, jn, socket):

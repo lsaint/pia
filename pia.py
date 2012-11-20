@@ -12,7 +12,7 @@ if __name__ == '__main__':
     srv = PiaServer(pmgr)
     aut = AuthServer()
 
-    jobs = [gevent.spawn(pmgr.loop), gevent.spawn(srv.start), gevent.spawn(aut.start)]
+    jobs = [gevent.spawn(srv.start), gevent.spawn(aut.start)]
     gevent.joinall(jobs)
 
 
