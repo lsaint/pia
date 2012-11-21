@@ -15,4 +15,16 @@ class Player(object):
 
     def send(self, msg):
         self.socket.sendall(json.dumps(msg) + DELIMITER)
+        #print "send-msg", self.socket, msg
+
+
+
+class Actor(object):
+
+    def __init__(self, player, scid, roid):
+        self.player = player
+        self.scid = scid
+        self.roid = roid
+
+
 
