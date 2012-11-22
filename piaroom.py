@@ -37,12 +37,13 @@ class PiaRoom(object):
     def leave(self, s):
         player = self.socket2player.get(s)
         if player is not None:
-            if player == show.director:
+            if self.getShow() and player == self.show.director:
                 self.cancelShow()
             del self.socket2player[s]
 
 
     def cancelShow(self):
+        print "cancelShow"
         self.show = None
 
 

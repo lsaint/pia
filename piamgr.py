@@ -29,14 +29,12 @@ class PiaMgr(object):
         self.chl2room[chl] = room
 
 
-    def broadcast(self, s, **k):
+    def onBroadcast(self, room, player, **k):
         print "broadcast"
-        room = self.getRoomBySocket(s)
-        if room:
-            room.broadcast(k["Msg"])
+        room.broadcast(k["Msg"])
 
 
-    def login(self, s, **k):
+    def onLogin(self, s, **k):
         print "login"
         chl = k["Cid"]
         room = self.getRoomByChl(k["Cid"])
@@ -51,34 +49,50 @@ class PiaMgr(object):
         player.send(rep)
 
 
-    def logout(self, s, **k):
-        print "logout", s
-        room = self.getRoomBySocket(s)
-        if room:
-            print room
-            room.leave(s)
-        if self.getRoomBySocket(s) is not None:
-            del self.socket2room[s]
+    def onLogout(self, room, player, **k):
+        print "logout"
+        room.leave(player.socket)
+        del self.socket2room[player.socket]
 
 
-    def createShow(self, s, **k):
-        room = self.getRoomBySocket(s)
+    def onCreateShow(self, room, player, **k):
+        print "createShow"
         rep = {"Ret":const.RET_FL, "Op":"create_show"}
-        if not room or room.getShow() is not None or room.getPlayer(s) is None:
-            return self.reply(s, rep)
+        if room.getShow() is not None :
+            return player.send(rep)
         rep["Ret"] = const.RET_OK
-        self.reply(s, rep)
+        player.send(rep)
 
-        show = room.createShow(room.getPlayer(s), k["Scid"], k["Name"], k["Roles"])
+        show = room.createShow(player, k["Scid"], k["Name"], k["Roles"])
         broadcast_crate_show_msg = {"Scid":show.scid, "Name":show.name,\
                 "Roles":show.roles, "Op":"create_show_bc"}
         room.broadcast(broadcast_crate_show_msg)
 
 
+    def onApplyRole(self, room, player, **k):
+        rep = {"Ret":const.RET_FL, "Op":k["Op"]}
+        if  not room.getShow():
+            return player.send(rep)
+
+
     def disconnect(self, s):
-        self.logout(s)
+        self.commonCheck(s, **{"Op":"Logout"})
 
 
     def reply(self, s, msg):
         s.sendall(json.dumps(msg) + const.DELIMITER)
+
+
+    def commonCheck(self, s, **k):
+        room = self.getRoomBySocket(s)
+        if room:
+            player = room.getPlayer(s)
+            if player:
+                method = getattr(self, "on" + k["Op"])
+                method(room, player, **k)
+            else:
+                print "player not in room"
+        else:
+            print "commonCheck fail"
+            self.reply(s, {"Ret":const.RET_FL, "Op":k["Op"]})
 

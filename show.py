@@ -10,5 +10,12 @@ class Show(object):
         self.scid = scid
         self.name = name
         self.roles = roles
+        self.actors = {}
         self.status = const.SHOW_STATUS_RECRUIT
+
+
+    def join(self, player, roid):
+        pass
+
+
 

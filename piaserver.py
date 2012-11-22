@@ -24,11 +24,11 @@ class PiaServer(object):
                 print e
                 self.piaMgr.disconnect(socket)
                 break
-            print "2222", line
             if not line:
                 print ("client disconnected")
                 self.piaMgr.disconnect(socket)
                 break
+            print "line", line
             jn = json.loads(line)
             if type(jn) == dict:
                 self.dispatch(jn, socket)
@@ -36,8 +36,10 @@ class PiaServer(object):
 
     def dispatch(self, jn, socket):
         print "req", jn
-        method = getattr(self.piaMgr, jn["Op"])
-        method(socket, **jn)
+        if jn["Op"] == "Login":
+            self.piaMgr.onLogin(socket, **jn)
+        else:
+            self.piaMgr.commonCheck(socket, **jn)
 
 
     def start(self):
