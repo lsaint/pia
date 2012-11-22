@@ -46,6 +46,9 @@ class PiaMgr(object):
         rep = {"Ret":const.RET_FL, "Op":"login"}
         if ret:
             rep["Ret"] = const.RET_OK
+            show = room.getShow()
+            if show:
+                rep.update(show.getShowInfo())
         player.send(rep)
 
 
