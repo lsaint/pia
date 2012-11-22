@@ -45,10 +45,17 @@ class PiaRoom(object):
     def cancelShow(self):
         print "cancelShow"
         self.show = None
+        bc = {"Op":"CancelShow"}
+        self.broadcast(bc)
 
 
     def broadcast(self, msg):
         print "room.broadcast", self.socket2player
         for s, player in self.socket2player.items():
             player.send(msg)
+
+
+    def update(self):
+        if self.getShow():
+            self.show.update()
 

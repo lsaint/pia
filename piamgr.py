@@ -65,14 +65,37 @@ class PiaMgr(object):
 
         show = room.createShow(player, k["Scid"], k["Name"], k["Roles"])
         broadcast_crate_show_msg = {"Scid":show.scid, "Name":show.name,\
-                "Roles":show.roles, "Op":"create_show_bc"}
+                "Roles":show.roles, "ApplyTime":const.APPLY_TIME, "Op":"create_show_bc"}
         room.broadcast(broadcast_crate_show_msg)
 
 
     def onApplyRole(self, room, player, **k):
         rep = {"Ret":const.RET_FL, "Op":k["Op"]}
-        if  not room.getShow():
+        show = room.getShow()
+        roid = k["Roid"]
+        if not show or not show.applyRole(player, roid):
             return player.send(rep)
+
+
+    def onAcceptApply(self, room, player, **k):
+        print "onAccetpApply", k
+        rep = {"Ret":const.RET_FL, "Op":k["Op"]}
+        roid = k["Roid"]
+        show = room.getShow()
+        if not show or not show.acceptApply(player, k["Roid"]):
+            return player.send(rep)
+        rep["Roid"] = roid
+        rep["Uid"] = k["Uid"]
+        rep["Ret"] = const.RET_OK
+        room.broadcast(rep)
+
+
+    def onCancelShow(self, room, player, **k):
+        rep = {"Ret":const.RET_FL, "Op":k["Op"]}
+        show = room.getShow()
+        if not show or show.director != player:
+            return player.send(rep)
+        room.cancelShow()
 
 
     def disconnect(self, s):
@@ -80,7 +103,10 @@ class PiaMgr(object):
 
 
     def reply(self, s, msg):
-        s.sendall(json.dumps(msg) + const.DELIMITER)
+        try:
+            s.sendall(json.dumps(msg) + const.DELIMITER)
+        except Exception, e:
+            print "reply err", e
 
 
     def commonCheck(self, s, **k):
@@ -95,4 +121,11 @@ class PiaMgr(object):
         else:
             print "commonCheck fail"
             self.reply(s, {"Ret":const.RET_FL, "Op":k["Op"]})
+
+
+    def update(self):
+        while True:
+            gevent.sleep(1)
+            for _, room in self.socket2room.items():
+                room.update()
 
