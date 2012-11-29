@@ -69,7 +69,7 @@ class Show(object):
     def enterStartStatus(self):
         print "enterStartStatus"
         self.status = const.SHOW_STATUS_START
-        bc = {"Op":"status", "Status":self.status}
+        bc = {"Op":"status", "Status":self.status, "Time":const.SHOW_TIME}
         self.room.broadcast(bc)
 
 
