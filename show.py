@@ -44,7 +44,7 @@ class Show(object):
         #self.applying[player] = roid
         if self.actors.get(roid) is not None:
             return False
-        self.director.send({"Op":"apply", "Roid":roid, "Uid":player.uid})
+        self.director.send({"Op":"apply", "Roid":roid, "Name":self.roles[roid], "Uid":player.uid})
         return True
 
 
