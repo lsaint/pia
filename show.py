@@ -81,6 +81,9 @@ class Show(object):
         elif self.status == const.SHOW_STATUS_PREPARE:
             if time.time() - self.create_time >= (const.APPLY_TIME + const.PREPARE_TIME): 
                 self.enterStartStatus()
+        elif self.status == const.SHOW_STATUS_START:
+            if time.time() - self.create_time >= (const.APPLY_TIME + const.PREPARE_TIME + const.SHOW_TIME):
+                self.room.cancelShow()
 
 
     def leave(self, player):
