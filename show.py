@@ -24,11 +24,16 @@ class Show(object):
         for roid, player in self.actors.items():
             actors[roid] = player.uid
 
+        remain_time = 0
         t = int(time.time()) - self.create_time
         if t > const.APPLY_TIME:
             t -= const.APPLY_TIME
+            remain_time = const.PREPARE_TIME - t
         if t > const.PREPARE_TIME:
             t -= const.PREPARE_TIME
+            remain_time = const.SHOW_TIME - t
+        else:
+            remain_time = t
 
         return {"Director":self.director.uid,\
                 "Scid":self.scid,
@@ -36,7 +41,7 @@ class Show(object):
                 "Roles":self.roles,
                 "Actor":actors,
                 "Status":self.status,
-                "Time":t}
+                "Time":remain_time}
 
 
     def applyRole(self, player, roid):
