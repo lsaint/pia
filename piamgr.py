@@ -85,7 +85,7 @@ class PiaMgr(object):
         rep = {"Ret":const.RET_FL, "Op":k["Op"]}
         roid = k["Roid"]
         show = room.getShow()
-        if not show or not show.acceptApply(player, k["Roid"]):
+        if not show or not show.acceptApply(k["Uid"], k["Roid"]):
             return player.send(rep)
         rep["Roid"] = roid
         rep["Uid"] = k["Uid"]

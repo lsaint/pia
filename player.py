@@ -14,7 +14,11 @@ class Player(object):
         self.socket = s
 
     def send(self, msg):
-        self.socket.sendall(json.dumps(msg) + DELIMITER)
+        try:
+            self.socket.sendall(json.dumps(msg) + DELIMITER)
+        except Exception, e:
+            print "player send err", e
+
         #print "send-msg", self.socket, msg
 
 

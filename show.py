@@ -20,10 +20,6 @@ class Show(object):
 
 
     def getShowInfo(self):
-        actors = {}
-        for roid, player in self.actors.items():
-            actors[roid] = player.uid
-
         remain_time = 0
         t = int(time.time()) - self.create_time
         if t > const.APPLY_TIME:
@@ -33,13 +29,13 @@ class Show(object):
             t -= const.PREPARE_TIME
             remain_time = const.SHOW_TIME - t
         else:
-            remain_time = t
+            remain_time = const.APPLY_TIME - t
 
         return {"Director":self.director.uid,\
                 "Scid":self.scid,
                 "Name":self.name,
                 "Roles":self.roles,
-                "Actor":actors,
+                "Actor":self.actors,
                 "Status":self.status,
                 "Time":remain_time}
 
@@ -53,11 +49,12 @@ class Show(object):
         return True
 
 
-    def acceptApply(self, player, roid):
-        print "applyRole"
+    #def acceptApply(self, player, roid):
+    def acceptApply(self, uid, roid):
+        print "applyRole-------", roid, uid
         if self.actors.get(roid) is not None:
             return False
-        self.actors[roid] = player
+        self.actors[roid] = uid
         return True
 
 
@@ -79,7 +76,7 @@ class Show(object):
 
 
     def update(self):
-        print "show update"
+        #print "show update"
         if self.status == const.SHOW_STATUS_APPLY:
             if time.time() - self.create_time >= const.APPLY_TIME: 
                 self.enterPrepareStatus()
@@ -96,7 +93,7 @@ class Show(object):
             return self.room.cancelShow()
 
         for roid, actor in self.actors.items():
-            if actor == player:
+            if actor == player.uid:
                 del self.actors[roid]
                 self.room.broadcast({"Op":"RoleLeave", "Roid":roid})
 
