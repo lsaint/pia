@@ -20,16 +20,18 @@ class Show(object):
 
 
     def getShowInfo(self):
-        remain_time = 0
+        #remain_time = 0
         t = int(time.time()) - self.create_time
-        if t > const.APPLY_TIME:
-            t -= const.APPLY_TIME
-            remain_time = const.PREPARE_TIME - t
-        if t > const.PREPARE_TIME:
-            t -= const.PREPARE_TIME
-            remain_time = const.SHOW_TIME - t
-        else:
-            remain_time = const.APPLY_TIME - t
+        if const.APPLY_TIME > t:
+            t = const.APPLY_TIME - t
+        #if t > const.APPLY_TIME:
+        #    t -= const.APPLY_TIME
+        #    remain_time = const.PREPARE_TIME - t
+        #if t > const.PREPARE_TIME:
+        #    t -= const.PREPARE_TIME
+        #    remain_time = const.SHOW_TIME - t
+        #else:
+        #    remain_time = const.APPLY_TIME - t
 
         return {"Director":self.director.uid,\
                 "Scid":self.scid,
@@ -37,7 +39,7 @@ class Show(object):
                 "Roles":self.roles,
                 "Actor":self.actors,
                 "Status":self.status,
-                "Time":remain_time}
+                "Time":t}
 
 
     def applyRole(self, player, roid):
@@ -49,12 +51,13 @@ class Show(object):
         return True
 
 
-    #def acceptApply(self, player, roid):
     def acceptApply(self, uid, roid):
-        print "applyRole-------", roid, uid
+        print "applyRole", roid, uid
         if self.actors.get(roid) is not None:
             return False
         self.actors[roid] = uid
+        if len(self.actors) == len(self.roles):
+            self.enterPrepareStatus()
         return True
 
 
@@ -76,7 +79,6 @@ class Show(object):
 
 
     def update(self):
-        #print "show update"
         if self.status == const.SHOW_STATUS_APPLY:
             if time.time() - self.create_time >= const.APPLY_TIME: 
                 self.enterPrepareStatus()
@@ -84,8 +86,9 @@ class Show(object):
             if time.time() - self.create_time >= (const.APPLY_TIME + const.PREPARE_TIME): 
                 self.enterStartStatus()
         elif self.status == const.SHOW_STATUS_START:
-            if time.time() - self.create_time >= (const.APPLY_TIME + const.PREPARE_TIME + const.SHOW_TIME):
-                self.room.cancelShow()
+            #if time.time() - self.create_time >= (const.APPLY_TIME + const.PREPARE_TIME + const.SHOW_TIME):
+            #    self.room.cancelShow()
+            pass
 
 
     def leave(self, player):
