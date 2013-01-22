@@ -58,6 +58,11 @@ class PiaMgr(object):
         del self.socket2room[player.socket]
 
 
+    def onGiveGift(self, room, player, **k):
+        print "onGiveGift"
+        room.show.onGiveGift(k["Touid"], k["Gid"], k["Price"])
+
+
     def onCreateShow(self, room, player, **k):
         print "createShow"
         rep = {"Ret":const.RET_FL, "Op":"create_show"}
@@ -87,6 +92,7 @@ class PiaMgr(object):
         show = room.getShow()
         if not show or not show.acceptApply(k["Uid"], k["Roid"]):
             return player.send(rep)
+        show.setActorGiftPrice(k["Uid"], k["GiftPrice"])
         rep["Roid"] = roid
         rep["Uid"] = k["Uid"]
         rep["Ret"] = const.RET_OK

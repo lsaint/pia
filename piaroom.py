@@ -51,7 +51,6 @@ class PiaRoom(object):
 
 
     def broadcast(self, msg):
-        print "room.broadcast", self.socket2player
         for s, player in self.socket2player.items():
             player.send(msg)
 
